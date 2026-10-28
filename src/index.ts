@@ -100,7 +100,11 @@ app.post("/v1/webhooks/payos", async (c) => {
   )
     .bind(data.orderCode)
     .first<{ order_code: number; buyer_email: string; amount: number; status: string }>();
-  if (!order || order.amount !== data.amount) return c.json({ error: "Order mismatch" }, 409);
+  // payOS validates a webhook URL by sending a correctly signed sample event
+  // whose order does not exist in our database. Acknowledge such samples but
+  // never create an event, mark an order paid, or issue a license for them.
+  if (!order) return c.json({ success: true, acknowledged: "unknown-order" });
+  if (order.amount !== data.amount) return c.json({ error: "Order mismatch" }, 409);
 
   const now = new Date().toISOString();
   const statements = [
