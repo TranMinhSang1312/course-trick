@@ -13,6 +13,28 @@ app.use("/v1/*", cors({ origin: "*", allowHeaders: ["Content-Type", "Authorizati
 
 app.get("/health", (c) => c.json({ ok: true, service: "coursera-tool-api" }));
 
+app.get("/payment/success", (c) =>
+  c.html(`<!doctype html>
+<html lang="vi">
+  <head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Thanh toán thành công</title></head>
+  <body style="font-family:system-ui,sans-serif;max-width:42rem;margin:4rem auto;padding:0 1rem">
+    <h1>Đã ghi nhận thanh toán</h1>
+    <p>Bạn có thể quay lại extension. Hệ thống sẽ kích hoạt quyền sử dụng sau khi webhook ngân hàng được xác nhận.</p>
+  </body>
+</html>`),
+);
+
+app.get("/payment/cancel", (c) =>
+  c.html(`<!doctype html>
+<html lang="vi">
+  <head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Đã hủy thanh toán</title></head>
+  <body style="font-family:system-ui,sans-serif;max-width:42rem;margin:4rem auto;padding:0 1rem">
+    <h1>Thanh toán chưa hoàn tất</h1>
+    <p>Không có quyền premium nào được kích hoạt. Bạn có thể quay lại extension để thử lại.</p>
+  </body>
+</html>`),
+);
+
 app.post("/v1/orders", async (c) => {
   const body: { buyerEmail?: string } = await c.req
     .json<{ buyerEmail?: string }>()

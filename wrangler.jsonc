@@ -15,9 +15,9 @@
     }
   ],
   "vars": {
-    "APP_BASE_URL": "https://coursera-tool-api.example.workers.dev",
-    "RETURN_URL": "https://example.com/payment/success",
-    "CANCEL_URL": "https://example.com/payment/cancel",
+    "APP_BASE_URL": "https://course-trick.sang13122005.workers.dev",
+    "RETURN_URL": "https://course-trick.sang13122005.workers.dev/payment/success",
+    "CANCEL_URL": "https://course-trick.sang13122005.workers.dev/payment/cancel",
     "PRODUCT_PRICE_VND": "99000",
     "LICENSE_MAX_ACTIVATIONS": "3"
   }
