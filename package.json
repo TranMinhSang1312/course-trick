@@ -8,8 +8,8 @@
     "deploy": "wrangler deploy",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "db:migrate:local": "wrangler d1 migrations apply coursera-tool-db --local",
-    "db:migrate:remote": "wrangler d1 migrations apply coursera-tool-db --remote"
+    "db:migrate:local": "wrangler d1 migrations apply trick-course --local",
+    "db:migrate:remote": "wrangler d1 migrations apply trick-course --remote"
   },
   "dependencies": {
     "hono": "4.13.14"

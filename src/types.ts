@@ -4,6 +4,7 @@ export interface Env {
   PAYOS_API_KEY: string;
   PAYOS_CHECKSUM_KEY: string;
   TOKEN_SIGNING_SECRET: string;
+  EMAIL_PEPPER: string;
   APP_BASE_URL: string;
   RETURN_URL: string;
   CANCEL_URL: string;
