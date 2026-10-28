@@ -96,3 +96,5 @@ Add encrypted secrets in the Worker dashboard after the first deployment.
 The server fixes the product price from its environment. It does not accept an amount supplied by the extension.
 `POST /v1/orders` also returns a one-time `purchaseToken`. The extension must store it locally and use it as `licenseKey` when calling `/v1/licenses/activate` after the order is paid.
 
+The production configuration charges `20,000 VND` and grants 30 days of access. The extension should refresh its short-lived access token on startup; the server remains the authority for `expiresAt`.
+

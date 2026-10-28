@@ -5,6 +5,7 @@ TOKEN_SIGNING_SECRET=replace-with-at-least-32-random-bytes
 APP_BASE_URL=http://localhost:8787
 RETURN_URL=https://example.com/payment/success
 CANCEL_URL=https://example.com/payment/cancel
-PRODUCT_PRICE_VND=99000
+PRODUCT_PRICE_VND=20000
+SUBSCRIPTION_DAYS=30
 LICENSE_MAX_ACTIVATIONS=3
 

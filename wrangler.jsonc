@@ -18,7 +18,8 @@
     "APP_BASE_URL": "https://course-trick.sang13122005.workers.dev",
     "RETURN_URL": "https://course-trick.sang13122005.workers.dev/payment/success",
     "CANCEL_URL": "https://course-trick.sang13122005.workers.dev/payment/cancel",
-    "PRODUCT_PRICE_VND": "99000",
+    "PRODUCT_PRICE_VND": "20000",
+    "SUBSCRIPTION_DAYS": "30",
     "LICENSE_MAX_ACTIVATIONS": "3"
   }
 }

@@ -8,6 +8,7 @@ export interface Env {
   RETURN_URL: string;
   CANCEL_URL: string;
   PRODUCT_PRICE_VND: string;
+  SUBSCRIPTION_DAYS: string;
   LICENSE_MAX_ACTIVATIONS: string;
 }
 

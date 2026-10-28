@@ -125,12 +125,14 @@ app.post("/v1/webhooks/payos", async (c) => {
     const licenseId = crypto.randomUUID();
     if (!order.claim_token_hash) return c.json({ error: "Order has no purchase token" }, 409);
     const maxActivations = Math.max(1, Number.parseInt(c.env.LICENSE_MAX_ACTIVATIONS, 10) || 3);
+    const subscriptionDays = Math.max(1, Number.parseInt(c.env.SUBSCRIPTION_DAYS, 10) || 30);
+    const expiresAt = new Date(Date.now() + subscriptionDays * 24 * 60 * 60 * 1000).toISOString();
     statements.push(
       c.env.DB.prepare(
         "UPDATE orders SET status = 'PAID', payment_reference = ?, paid_at = ? WHERE order_code = ?",
       ).bind(data.reference, now, data.orderCode),
       c.env.DB.prepare(
-        "INSERT INTO licenses (id, license_key_hash, order_code, buyer_email, max_activations, created_at) VALUES (?, ?, ?, ?, ?, ?)",
+        "INSERT INTO licenses (id, license_key_hash, order_code, buyer_email, max_activations, created_at, expires_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
       ).bind(
         licenseId,
         order.claim_token_hash,
@@ -138,6 +140,7 @@ app.post("/v1/webhooks/payos", async (c) => {
         order.buyer_email,
         maxActivations,
         now,
+        expiresAt,
       ),
     );
   }
@@ -204,7 +207,14 @@ app.post("/v1/licenses/activate", async (c) => {
     { sub: installationHash, licenseId: license.id, plan: license.plan, exp },
     c.env.TOKEN_SIGNING_SECRET,
   );
-  return c.json({ active: true, plan: license.plan, features: ["premium"], exp, accessToken });
+  return c.json({
+    active: true,
+    plan: license.plan,
+    features: ["premium"],
+    expiresAt: license.expires_at,
+    exp,
+    accessToken,
+  });
 });
 
 app.use("/v1/entitlements/*", async (c, next) => {
@@ -225,7 +235,12 @@ app.get("/v1/entitlements/me", async (c) => {
     license?.status === "ACTIVE" &&
       (!license.expires_at || Date.parse(license.expires_at) > Date.now()),
   );
-  return c.json({ active, plan: license?.plan ?? null, features: active ? ["premium"] : [] });
+  return c.json({
+    active,
+    plan: license?.plan ?? null,
+    features: active ? ["premium"] : [],
+    expiresAt: license?.expires_at ?? null,
+  });
 });
 
 app.notFound((c) => c.json({ error: "Not found" }, 404));
