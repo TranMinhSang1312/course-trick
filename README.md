@@ -2,6 +2,16 @@
 
 Cloudflare Workers + D1 backend for payOS orders and extension license entitlements.
 
+## Landing page
+
+The same Worker serves the Course Trick landing page from `public/`:
+
+- `GET /` — installation and usage guide.
+- `GET /assets/course-trick-extension-v1.1.0.zip` — downloadable extension package.
+- `/v1/*`, `/health`, and `/payment/*` — routed to the Hono Worker before static assets.
+
+Edit the local files in `public/`, then run `npm run dev` to preview the site and API together.
+
 ## Security first
 
 The payOS credentials previously pasted into chat must be rotated. Never commit real credentials. Store production credentials only as Cloudflare encrypted secrets.

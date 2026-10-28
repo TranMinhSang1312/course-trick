@@ -3,6 +3,14 @@
   "name": "course-trick",
   "main": "src/index.ts",
   "compatibility_date": "2026-10-28",
+  "assets": {
+    "directory": "./public",
+    "run_worker_first": [
+      "/v1/*",
+      "/health",
+      "/payment/*"
+    ]
+  },
   "observability": {
     "enabled": true
   },
