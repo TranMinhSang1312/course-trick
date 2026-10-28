@@ -1,0 +1,25 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "coursera-tool-api",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-10-28",
+  "observability": {
+    "enabled": true
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "coursera-tool-db",
+      "database_id": "REPLACE_WITH_D1_DATABASE_ID",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "vars": {
+    "APP_BASE_URL": "https://coursera-tool-api.example.workers.dev",
+    "RETURN_URL": "https://example.com/payment/success",
+    "CANCEL_URL": "https://example.com/payment/cancel",
+    "PRODUCT_PRICE_VND": "99000",
+    "LICENSE_MAX_ACTIVATIONS": "3"
+  }
+}
+

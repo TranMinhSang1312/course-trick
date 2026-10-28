@@ -1,0 +1,27 @@
+{
+  "name": "coursera-tool-api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "db:migrate:local": "wrangler d1 migrations apply coursera-tool-db --local",
+    "db:migrate:remote": "wrangler d1 migrations apply coursera-tool-db --remote"
+  },
+  "dependencies": {
+    "hono": "4.13.14"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "5.20261028.1",
+    "typescript": "^5.9.3",
+    "vitest": "5.0.5",
+    "wrangler": "4.154.0"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
+
