@@ -50,10 +50,12 @@ app.post("/v1/orders", async (c) => {
   const orderCode = Date.now();
   const description = `EXT${orderCode.toString().slice(-6)}`;
   const now = new Date().toISOString();
+  const purchaseToken = randomToken("purchase");
+  const purchaseTokenHash = await sha256Hex(purchaseToken);
   await c.env.DB.prepare(
-    "INSERT INTO orders (order_code, buyer_email, amount, created_at) VALUES (?, ?, ?, ?)",
+    "INSERT INTO orders (order_code, buyer_email, amount, claim_token_hash, created_at) VALUES (?, ?, ?, ?, ?)",
   )
-    .bind(orderCode, buyerEmail, amount, now)
+    .bind(orderCode, buyerEmail, amount, purchaseTokenHash, now)
     .run();
 
   try {
@@ -61,7 +63,7 @@ app.post("/v1/orders", async (c) => {
     await c.env.DB.prepare("UPDATE orders SET payment_link_id = ? WHERE order_code = ?")
       .bind(payment.paymentLinkId, orderCode)
       .run();
-    return c.json({ orderCode, amount, currency: "VND", ...payment }, 201);
+    return c.json({ orderCode, purchaseToken, amount, currency: "VND", ...payment }, 201);
   } catch (error) {
     await c.env.DB.prepare("UPDATE orders SET status = 'CANCELLED' WHERE order_code = ?")
       .bind(orderCode)
@@ -96,10 +98,16 @@ app.post("/v1/webhooks/payos", async (c) => {
   if (existingEvent) return c.json({ success: true });
 
   const order = await c.env.DB.prepare(
-    "SELECT order_code, buyer_email, amount, status FROM orders WHERE order_code = ?",
+    "SELECT order_code, buyer_email, amount, status, claim_token_hash FROM orders WHERE order_code = ?",
   )
     .bind(data.orderCode)
-    .first<{ order_code: number; buyer_email: string; amount: number; status: string }>();
+    .first<{
+      order_code: number;
+      buyer_email: string;
+      amount: number;
+      status: string;
+      claim_token_hash: string | null;
+    }>();
   // payOS validates a webhook URL by sending a correctly signed sample event
   // whose order does not exist in our database. Acknowledge such samples but
   // never create an event, mark an order paid, or issue a license for them.
@@ -115,8 +123,7 @@ app.post("/v1/webhooks/payos", async (c) => {
 
   if (body.success && data.code === "00" && order.status !== "PAID") {
     const licenseId = crypto.randomUUID();
-    const licenseKey = randomToken("ct");
-    const licenseHash = await sha256Hex(licenseKey);
+    if (!order.claim_token_hash) return c.json({ error: "Order has no purchase token" }, 409);
     const maxActivations = Math.max(1, Number.parseInt(c.env.LICENSE_MAX_ACTIVATIONS, 10) || 3);
     statements.push(
       c.env.DB.prepare(
@@ -124,11 +131,15 @@ app.post("/v1/webhooks/payos", async (c) => {
       ).bind(data.reference, now, data.orderCode),
       c.env.DB.prepare(
         "INSERT INTO licenses (id, license_key_hash, order_code, buyer_email, max_activations, created_at) VALUES (?, ?, ?, ?, ?, ?)",
-      ).bind(licenseId, licenseHash, data.orderCode, order.buyer_email, maxActivations, now),
+      ).bind(
+        licenseId,
+        order.claim_token_hash,
+        data.orderCode,
+        order.buyer_email,
+        maxActivations,
+        now,
+      ),
     );
-
-    // A real product should deliver this once through an authenticated customer portal or email.
-    console.log(JSON.stringify({ event: "license.created", orderCode: data.orderCode, licenseKey }));
   }
 
   await c.env.DB.batch(statements);

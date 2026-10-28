@@ -94,4 +94,5 @@ Add encrypted secrets in the Worker dashboard after the first deployment.
 - `GET /v1/entitlements/me`
 
 The server fixes the product price from its environment. It does not accept an amount supplied by the extension.
+`POST /v1/orders` also returns a one-time `purchaseToken`. The extension must store it locally and use it as `licenseKey` when calling `/v1/licenses/activate` after the order is paid.
 
