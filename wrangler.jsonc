@@ -9,8 +9,8 @@
   "d1_databases": [
     {
       "binding": "DB",
-      "database_name": "coursera-tool-db",
-      "database_id": "REPLACE_WITH_D1_DATABASE_ID",
+      "database_name": "trick-course",
+      "database_id": "44a67f56-5894-419e-8feb-e3cdfc5d9ea2",
       "migrations_dir": "migrations"
     }
   ],
